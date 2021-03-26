@@ -13,15 +13,13 @@ using namespace std;
 }*/
 
 string calculate(string leftNum, string rightNum, char oper) {
-	int ans;
-	int ln = stoi(leftNum), rn = stoi(rightNum);
+	long long ret, ln = stoi(leftNum), rn = stoi(rightNum);
 
-	if (oper == '*') ans = ln * rn;
-	else if (oper == '+') ans = ln + rn;
-	// oper == '-'
-	else ans = ln - rn;
+	if (oper == '*') ret = ln * rn;
+	else if (oper == '+') ret = ln + rn;
+	else if (oper == '-') ret= ln - rn;
 
-	return to_string(ans);
+	return to_string(ret);
 }
 
 long long solveExpression(string expression, string priority) {
@@ -34,13 +32,13 @@ long long solveExpression(string expression, string priority) {
 		// Resolve all the "oper" operators in the expression.
 		int leftNumIdx, rightNumIdx, operIdx = 1;
 		string leftNum = "", rightNum = "";
-		while (operIdx < expression.length()) {
+		while (0 <= operIdx && operIdx < expression.length()) {
 			if (expression.at(operIdx) == oper) {
 
 				////----- RIGHT SIDE ----- ////
 				rightNumIdx = operIdx + 1;
 				while (rightNumIdx < expression.length()) {
-					// If there's a '-' at the front, add it to the string.
+					// If there's '-' at the front, add it to the string.
 					if (rightNumIdx == operIdx + 1 && expression.at(rightNumIdx) == '-') {
 							rightNum += expression[rightNumIdx];
 					} else {
@@ -50,21 +48,28 @@ long long solveExpression(string expression, string priority) {
 					}
 					rightNumIdx += 1;
 				}
-
+				
 				////----- LEFT SIDE ----- ////
 				leftNumIdx = operIdx - 1;
 				while (0 <= leftNumIdx) {
-				 	// Need to insert at the front. (Since you're decreasing leftNumIdx.)
 					if ('0' <= expression.at(leftNumIdx) && expression.at(leftNumIdx) <= '9') 
 						leftNum.insert(leftNum.begin(), expression[leftNumIdx]);
-					// If the expression[leftNumIdx] is '-', check if there's another operator at the front.
+					// If the expression[leftNumIdx] is '-', check if there's more operator at the front.
 					else {
-						if (expression.at(leftNumIdx) != '-') break;
-						// If there's more space for another operator and if it's actually an operator.
-						if (leftNumIdx == 0 || (1 < leftNumIdx && 
-								(expression.at(leftNumIdx - 1) < '0' || '9' < expression.at(leftNumIdx - 1)))) {
-							// Insert '-' to the leftNum string.
-							leftNum.insert(leftNum.begin(), expression[leftNumIdx]);
+						if (expression.at(leftNumIdx) == '-') {
+							// If there's more space for another operator and if it's actually an operator,
+							// insert '-' to the string because it's a sign of the number. (Not an operator.)
+							if (leftNumIdx == 0) leftNum.insert(leftNum.begin(), expression[leftNumIdx]);
+							else if (expression.at(leftNumIdx - 1) < '0' || '9' < expression.at(leftNumIdx - 1))
+								leftNum.insert(leftNum.begin(), expression[leftNumIdx]);
+							else break;
+
+							/*
+							if (leftNumIdx == 0 || (1 < leftNumIdx && 
+										(expression.at(leftNumIdx - 1) < '0' || '9' < expression.at(leftNumIdx - 1)))) {
+								leftNum.insert(leftNum.begin(), expression[leftNumIdx]);
+							} else break;
+							*/
 						} else break;
 					}
 					leftNumIdx -= 1;
@@ -80,15 +85,14 @@ long long solveExpression(string expression, string priority) {
 				expression.replace(leftNumIdx, rightNumIdx - leftNumIdx, ans);
 				
 				// '+-'  ->  '-'
-				if (ans[0] == '-') {
+				// Does it matter? Not sure.
+				/*if (ans[0] == '-') {
 					if (1 < leftNumIdx && expression[leftNumIdx - 1] == '+') {
 						expression.erase(leftNumIdx - 1, 1);
 						leftNumIdx -= 2;
 					}
-				}
+				}*/
 
-				// Adjusting operIdx.
-				//if (leftNumIdx == 0) leftNumIdx += 1;
 				operIdx = leftNumIdx;
 				leftNum = ""; rightNum = "";
 			}
@@ -103,27 +107,14 @@ long long solveExpression(string expression, string priority) {
 }
 
 long long solution(string expression) {
-	long long answer = 0;
-	string operators = "";
-	vector<long long> candidates;
+	long long answer = 0,ret = 0;
+	string operators = "*+-";
 	
-	// Check if each operator is in the expression.
-	for (const auto& e: expression) if (e == '*') { operators += "*"; break; }
-	for (const auto& e: expression) if (e == '+') { operators += "+"; break; }
-	for (const auto& e: expression) if (e == '-') { operators += "-"; break; }
-	cout << operators.length() << " operators in the expression." << endl;
-
 	// Make an operator priority with permutation.
 	do { 
-		candidates.push_back(solveExpression(expression, operators));
+		ret = solveExpression(expression, operators);
+		answer = max(answer, ret);
 	} while (next_permutation(operators.begin(), operators.end()));
-
-	for (const auto& e: candidates) cout << e << " ";
-	cout << endl;
-
-	// Choose the biggest calculation.
-	answer = candidates[0];
-	for (const auto& e: candidates) answer = max(answer, e);
 
 	cout << "ANSWER: " << answer << endl;
 	return answer;
