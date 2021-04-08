@@ -45,9 +45,7 @@ string solution(string p) {
 	if (isCorrect(u)) return u + solution(v);
 
 	// 4. u isn't correct.
-	answer.append(1, '(');
-	answer.append(solution(v));
-	answer.append(1, ')');
+	answer.append(1, '(').append(solution(v)).append(1, ')');
 	u.erase(u.begin());
 	u.erase(u.end() - 1);
 	reverseParenthesis(u);
