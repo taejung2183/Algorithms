@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 using namespace std;
 
 bool findMatch(const string& wildCard, const string& fileName) {
@@ -15,11 +16,9 @@ bool findMatch(const string& wildCard, const string& fileName) {
 	if (idx == wildCard.size()) return idx == fileName.size();
 
 	if (wildCard[idx] == '*') {
-		if (idx == wildCard.size() - 1) return true;
-		for (int skip = 0; idx + skip < fileName.size(); ++ skip) {
-			// idx is the last index.
-			if (wildCard[idx + 1] == fileName[idx + skip])
-				return findMatch(wildCard.substr(idx + 1), fileName.substr(idx + skip));
+		for (int skip = 0; idx + skip <= fileName.size(); ++ skip) {
+			if (findMatch(wildCard.substr(idx + 1), fileName.substr(idx + skip)))
+				return true;
 		}
 	}
 
@@ -29,7 +28,8 @@ bool findMatch(const string& wildCard, const string& fileName) {
 int main() {
 	int C; cin >> C;
 	string wildCard, fileName;
-	vector<string> answers;
+	priority_queue<string, vector<string>, greater<string>> answers;
+	vector<string> ans;
 
 	while (C-- > 0) {
 		cin >> wildCard;
@@ -37,13 +37,17 @@ int main() {
 		int n; cin >> n;
 		while (n-- > 0) {
 			cin >> fileName;
-			if (findMatch(wildCard, fileName)) 
-				answers.push_back(fileName);
+			if (findMatch(wildCard, fileName) == 1) 
+				answers.push(fileName);
+		}
+		while (!answers.empty()) {
+			ans.push_back(answers.top());
+			answers.pop();
 		}
 	}
-
-	cout << "\n--ANSWERS--" << endl;
-	for (const auto& e: answers) cout << e << endl;
+	
+	cout << endl;
+	for (const auto& e: ans) cout << e << endl; 
 
 	return 0;
 }
