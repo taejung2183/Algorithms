@@ -8,6 +8,26 @@ using namespace std;
 int cache[101][101];
 string wildCard, fileName;
 
+int findMatch2(int w, int f) {
+	int& ret = cache[w][f];
+	if (ret != -1) return ret;
+
+	// Change to recursion. (Not iteration.)
+	while (w < wildCard.size() && f < fileName.size() && 
+			(wildCard[w] == '?' || wildCard[w] == fileName[f])) 
+		return ret = findMatch2(w + 1, f + 1);
+
+	if (w == wildCard.size()) return ret = (f == fileName.size());
+
+	// 매번 단계마다 *에 아무것도 대응하지 않을 것인지, 한 글자를 더 대응할 것인지를 결정한다.
+	if (wildCard[w] == '*') {
+		if (findMatch2(w + 1, f) || (f < fileName.size() && findMatch2(w, f + 1)))
+			return ret = 1;
+	}
+
+	return ret = 0;
+}
+
 int findMatch(int w, int f) {
 	int& ret = cache[w][f];
 	if (ret != -1) return ret;
@@ -46,7 +66,7 @@ int main() {
 			cin >> fileName;
 			for (auto& row: cache) for (auto& e: row) e = -1;
 
-			if (findMatch(0, 0) == 1) 
+			if (findMatch2(0, 0)) 
 				answers.push(fileName);
 		}
 		while (!answers.empty()) {
