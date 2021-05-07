@@ -1,14 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
 
+const int INF = 987654321;
 int cache[10000];
 vector<int> numbers;
 
 int calculateLevel(vector<int>& piece) {
-	int first = piece[0], len = piece.size();
-	int second = piece[1];
+	int first = piece[0], second = piece[1];
+	int len = piece.size();
 
 	// Level 1 : All same.
 	bool isCorrect = true;
@@ -32,8 +34,8 @@ int calculateLevel(vector<int>& piece) {
 	// Level 4 : Two numbers are repeating.
 	isCorrect = true;
 	for (int i = 2; i < len; ++i) {
-		if (i % 2 == 1 && piece[i] != first ||
-				i % 2 == 0 && piece[i] != second)
+		if (i % 2 == 0 && piece[i] != first ||
+				i % 2 == 1 && piece[i] != second)
 			isCorrect = false;
 	}
 	if (isCorrect) return 4;
@@ -49,32 +51,19 @@ int calculateLevel(vector<int>& piece) {
 }
 
 int PI(int idx) {
+	// Base case: If you get to the end, return.
+	if (idx == numbers.size()) return 0;
+
 	int& ret = cache[idx];
 	if (ret != -1) return ret;
 
-	if (idx == numbers.size()) return ret;
-
-	// Maximum level.
-	ret = 34000;
-	vector<int> piece;
-	int level;
-	// Pick 3 to five numbers.
+	ret = INF;
+	// Task piece: Take 3 to 5 steps from current index.
 	for (int step = 3; step <= 5; ++step) {
-		// Got to the end.
-		if (idx == numbers.size()) {
-			ret = 0; break;
-		}
-		// Exceed the length of numbers.
-		else if (numbers.size() < idx + step) {
-			ret = 34000; break;
-		}
-		// Get into recursion.
-		else {
-			for (int i = idx; i < idx + step; ++i) 
-				piece.push_back(numbers[i]);
-			level = calculateLevel(piece);
-			ret = min(ret, PI(idx + step) + level);
-			piece.clear();
+		if (idx + step <= numbers.size()) {
+			vector<int> piece;
+			for (int i = idx; i < idx + step; ++i) piece.push_back(numbers[i]);
+			ret = min(ret, PI(idx + step) + calculateLevel(piece));
 		}
 	}
 	return ret;
