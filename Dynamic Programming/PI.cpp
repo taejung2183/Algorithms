@@ -8,41 +8,42 @@ vector<int> numbers;
 
 int calculateLevel(vector<int>& piece) {
 	int first = piece[0], len = piece.size();
-
-	// Level 1
-	bool flag = true;
-	for (int i = 1; i < len; ++i) 
-		if (piece[i] != first) flag = false;
-	if (flag) return 1;
-	
-	// Level 2
-	flag = true;
-	if (piece[0] + 1 == piece[1]) {
-		for (int i = 1; i < len - 1; ++i) 
-			if (piece[i] + 1 != piece[i + 1]) flag = false;
-	}
-	else if(piece[0] - 1 == piece[1]) {
-		for (int i = 1; i < len - 1; ++i) 
-			if (piece[i] - 1 != piece[i + 1]) flag = false;
-	}
-	if (flag) return 2;
-
-	// Level 4
-	flag = true;
 	int second = piece[1];
-	for (int i = 3; i < len; ++i) {
+
+	// Level 1 : All same.
+	bool isCorrect = true;
+	for (int i = 1; i < len; ++i) 
+		if (piece[i] != first) isCorrect = false;
+	if (isCorrect) return 1;
+	
+	// Level 2 : Increase or decrease by 1.
+	isCorrect = true;
+	if (first + 1 == second) {
+		for (int i = 1; i < len - 1; ++i) 
+			if (piece[i] + 1 != piece[i + 1]) isCorrect = false;
+	}
+	else if(first - 1 == second) {
+		for (int i = 1; i < len - 1; ++i) 
+			if (piece[i] - 1 != piece[i + 1]) isCorrect = false;
+	}
+	else isCorrect = false;
+	if (isCorrect) return 2;
+
+	// Level 4 : Two numbers are repeating.
+	isCorrect = true;
+	for (int i = 2; i < len; ++i) {
 		if (i % 2 == 1 && piece[i] != first ||
 				i % 2 == 0 && piece[i] != second)
-			flag = false;
+			isCorrect = false;
 	}
-	if (flag) return 4;
+	if (isCorrect) return 4;
 
-	// Level 5
-	flag = true;
+	// Level 5 : Isometric sequence.
+	isCorrect = true;
 	int diff = first - second;
 	for (int i = 1; i < len - 1; ++i) 
-		if (piece[i] - piece[i + 1] != diff) flag = false;
-	if (flag) return 5;
+		if (piece[i] - piece[i + 1] != diff) isCorrect = false;
+	if (isCorrect) return 5;
 
 	return 10;
 }
@@ -51,22 +52,30 @@ int PI(int idx) {
 	int& ret = cache[idx];
 	if (ret != -1) return ret;
 
+	if (idx == numbers.size()) return ret;
+
 	// Maximum level.
 	ret = 34000;
 	vector<int> piece;
 	int level;
 	// Pick 3 to five numbers.
 	for (int step = 3; step <= 5; ++step) {
-		// Un-divisible.
-		if (numbers.size() < idx + step) {
+		// Got to the end.
+		if (idx == numbers.size()) {
+			ret = 0; break;
+		}
+		// Exceed the length of numbers.
+		else if (numbers.size() < idx + step) {
 			ret = 34000; break;
 		}
-		// Slice the numbers until before the next idx.
-		for (int i = idx; i < idx + step; ++i) 
-			piece.push_back(numbers[i]);
-		level = calculateLevel(piece);
-		ret = min(ret, PI(idx + step) + level);
-		piece.clear();
+		// Get into recursion.
+		else {
+			for (int i = idx; i < idx + step; ++i) 
+				piece.push_back(numbers[i]);
+			level = calculateLevel(piece);
+			ret = min(ret, PI(idx + step) + level);
+			piece.clear();
+		}
 	}
 	return ret;
 }
