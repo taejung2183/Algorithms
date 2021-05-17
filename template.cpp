@@ -1,10 +1,15 @@
 #include <bits/stdc++.h>
 
 #define INF 987654321
-#define pb push_back
+#define PB push_back
+#define MP make_pair
 #define NL "\n"
+#define F first
+#define S second 
 
 typedef long long ll;
+typedef vector<int> vi;
+typedef pair<int,int> pi;
 
 using namespace std;
 
