@@ -7,11 +7,10 @@
 #define F first
 #define S second 
 
+using namespace std;
 typedef long long ll;
 typedef vector<int> vi;
 typedef pair<int,int> pi;
-
-using namespace std;
 
 int main() {
 	ios::sync_with_stdio(0);
