@@ -5,7 +5,7 @@
 using namespace std;
 
 const int keyPos[13][3] = {
-	{-1,-1}, // Dummy for matching up index with actual number.
+	{3,1}, // 0
 	{0,0}, // 1
 	{0,1},
 	{0,2},
@@ -16,7 +16,7 @@ const int keyPos[13][3] = {
 	{2,1},
 	{2,2}, // 9
 	{3,0}, // *
-	{3,1}, // 0
+	{-1,-1}, // Dummy
 	{3,2}, // # 
 };
 
@@ -52,7 +52,6 @@ string solution(vector<int> numbers, string hand) {
 		}
 		else {
 			int dist;
-			if (n == 0) n = 11;
 			if ((dist = calDist(l, r, n)) == 0) {
 				// Same distance.
 				if (!h) { answer += "L"; l = n; }
