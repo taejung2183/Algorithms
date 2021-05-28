@@ -2,13 +2,41 @@
 
 using namespace std;
 
+// Pseudo code of greedy algorithm.
+//int order(const vector<int>& russian, const vector<int>& korean) {
+//	int wins = 0;
+//	multiset<int> ratings(korean.begin(), korean.end());
+//	for (int r = 0; r < russian.size(); ++r) {
+//		int lowest = INF;
+//		int lowIdx;
+//		for (int k = 0; k < korean.size(); ++k) {
+//			if (russian[r] < korean[k] && lowest > korean[k]) 
+//				lowIdx = k;
+//		}
+//		// If you can win, use the lowest among those who can win.
+//		if (lowest != INF) {
+//			ratings.erase(lowIdx);
+//			++wins;
+//		}
+//		// If you can't win, use the lowest in the entire team.
+//		else {
+//			ratings.erase(ratings.begin());
+//		}
+//	}
+//
+//	return wins
+//}
+
 int order(const vector<int>& russian, const vector<int>& korean) {
 	int n = russian.size(), wins = 0;
 	multiset<int> ratings(korean.begin(), korean.end());
 	for (int rus = 0; rus < n; ++rus) {
+		// rbegin() points the highest element.
 		if (*ratings.rbegin() < russian[rus])
+			// Use the lowest rating since you can't win anyway.
 			ratings.erase(ratings.begin());
 		else {
+			// Use the lowest rating among those who can win.
 			ratings.erase(ratings.lower_bound(russian[rus]));
 			++wins;
 		}
