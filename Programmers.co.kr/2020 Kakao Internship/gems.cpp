@@ -19,15 +19,27 @@ using namespace std;
 vector<string> g;
 set<string> kind;
 
-vector<int> divide(int lo, int hi) {
-
+vector<int> gemShop(int lo, int hi) {
+	// Base case: If lo~hi include all kinds of gem, return [lo,hi]
+	bool allIncluded = true;
+	for (auto kindIt = kind.begin(); kindId != kind.end(); ++kindIt) {
+		auto gemIt = find(g.begin(), g.end(), *kindIt);
+		if (gemIt == g.end()) {
+			allIncluded = false;
+			break;
+		}
+	}
+	if (allIncluded) {
+		vector<int> ret = {lo, hi};
+		return ret;
+	}
 }
 
 vector<int> solution(vector<string> gems) {
     vector<int> answer;
 	g = gems
 	kind = set<string>(gems.begin(), gems.end());
-	answer = divide(0, gems.size());
+	answer = gemShop(0, gems.size());
     return answer;
 }
 
