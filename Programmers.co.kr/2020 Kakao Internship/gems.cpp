@@ -5,21 +5,12 @@
 #include <algorithm>
 
 using namespace std;
-/*
-   우선, 보석의 종류를 모르니까 set에 저장해서 보석 종류의 가짓수를 알아낸다.
-   
-   완전 탐색: gems 벡터를 순회하면서 set의 보석 종류를 다 모으면 길이를 측정해서 
-   가장 짧은 길이를 반환.
-   n개의 입력 (최대 100k). 최악의 경우 보석의 종류가 100k 라고 하면 100k^100k 의 
-   시간 복잡도? 10,000,000,000
 
-   분할 정복: 절반으로 나누어 왼편 혹은 오른편에 모든 종류를 포함하는 배열이 있거나
-   중간에 걸쳐져 존재한다.
-   */
 vector<string> g;
 set<string> kind;
 
 vector<int> gemShop(int lo, int hi) {
+	vector<int> ret;
 	// Base case: If lo~hi include all kinds of gem, return [lo,hi]
 	bool allIncluded = true;
 	for (auto kindIt = kind.begin(); kindId != kind.end(); ++kindIt) {
@@ -30,9 +21,16 @@ vector<int> gemShop(int lo, int hi) {
 		}
 	}
 	if (allIncluded) {
-		vector<int> ret = {lo, hi};
+		ret = vector<int>() {lo, hi};
 		return ret;
 	}
+
+	int mid = (lo + hi) / 2;
+	vector<int> left = gemShop(lo, mid);
+	vector<int> right = gemShop(mid + 1, hi);
+	ret = min(left, right);
+
+	int l = mid, r = mid + 1;
 }
 
 vector<int> solution(vector<string> gems) {
