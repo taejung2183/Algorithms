@@ -1,43 +1,44 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <set>
-#include <algorithm>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
-vector<string> g;
-set<string> kind;
-
-vector<int> gemShop(int lo, int hi) {
-	vector<int> ret;
-	// Base case: If lo~hi include all kinds of gem, return [lo,hi]
-	bool allIncluded = true;
-	for (auto kindIt = kind.begin(); kindId != kind.end(); ++kindIt) {
-		auto gemIt = find(g.begin(), g.end(), *kindIt);
-		if (gemIt == g.end()) {
-			allIncluded = false;
-			break;
-		}
-	}
-	if (allIncluded) {
-		ret = vector<int>() {lo, hi};
-		return ret;
-	}
-
-	int mid = (lo + hi) / 2;
-	vector<int> left = gemShop(lo, mid);
-	vector<int> right = gemShop(mid + 1, hi);
-	ret = min(left, right);
-
-	int l = mid, r = mid + 1;
-}
-
 vector<int> solution(vector<string> gems) {
     vector<int> answer;
-	g = gems
-	kind = set<string>(gems.begin(), gems.end());
-	answer = gemShop(0, gems.size());
+	unordered_map<string, int> m;
+	const unordered_set<string> s(gems.begin(), gems.end());
+	int n = gems.size();
+	int l = 0, r = 0;
+
+	while (true) {
+		m[gems[r]] += 1;
+		if (m.size() == s.size()) break;
+		++r;
+	}
+	int min = r - l;
+	answer = {l + 1, r + 1};
+
+	while (r < n) {
+		string tmp = gems[l];
+		m[tmp] -= 1;
+		++l;
+		if (m[tmp] == 0) {
+			++r;
+			while (r < n) {
+				m[gems[r]] += 1;
+				if (!tmp.compare(gems[r])) break;
+				++r;
+			}
+		}
+		if (r - l < min) {
+			min = r - l;
+			answer = {l + 1, r + 1};
+		}
+	}
+
     return answer;
 }
 
