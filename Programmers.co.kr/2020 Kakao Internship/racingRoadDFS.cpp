@@ -81,41 +81,6 @@ void dp(int cy, int cx, int ly, int lx, int sum) {
 	}
 }
 
-// BFS
-struct Car {
-	// Current coordinates and last coordinates
-	int cy, cx, ly, lx;
-};
-/*int bfs() {
-	int ret = INF;
-	queue<Car> q;
-	q.push({0,0,0,0});
-
-	while (!q.empty()) {
-		Car car = q.front();
-		// Current coordinates.
-		int cy = car.cy, cx = car.cx;
-		// Last coordinates.
-		int ly = car.ly, lx = car.lx;
-		q.pop();
-
-		if (cy == len - 1 && cx == len - 1) return cost;
-
-		for (int i = 0; i < 4; ++i) {
-			int ny = cy + dy[i];
-			int nx = cx + dx[i];
-
-			if (ny >= 0 && ny < len && nx >= 0 && nx < len
-					&& !b[ny][nx] && !visited[ny][nx]) {
-				visited[ny][nx] = 1;
-				int c = (ny != ly && nx != lx) ? 600 : 100;
-				ret = min(ret, 
-				q.push(make_pair(make_pair(ny, nx), make_pair(cy, cx)));
-			}
-		}
-	}
-}*/
-
 int solution(vector<vector<int>> board) {
     int answer = 0;
 
