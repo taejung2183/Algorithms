@@ -11,7 +11,6 @@ const int INF = 2100000000;
 vector<vector<int>> b;
 int len;
 bool visited[25][25];
-int cache[25][25];
 const int dy[4] = {1,-1,0,0};
 const int dx[4] = {0,0,1,-1};
 
@@ -19,36 +18,46 @@ struct Car {
 	int cy, cx, ly, lx, cost;
 };
 
-// dfs with stack
+// DFS with stack
+// Utilize board input vector as cache memory
 int dfsStack() {
-	stack<Car> s;
-	visited[0][0] = true;
-	s.push({0,0,0,0,0});
-
 	int ret = INF;
+
+	stack<Car> s;
+	s.push({0,0,0,0,0});
+	b[0][0] = 0;
+
 	while (!s.empty()) {
 		Car car = s.top();
 		s.pop();
-
 		// Arrived
-		if (car.cy == len - 1 && car.cx == len - 1) {
-			ret = min(ret, car.cost);
-			break;
-		}
+		if (car.cy == len - 1 && car.cx == len - 1) ret = min(ret, car.cost);
 
 		// Check every direction from current coordinate
 		for (int i = 0; i < 4; ++i) {
 			int ny = car.cy + dy[i];
 			int nx = car.cx + dx[i];
 
-			// Valid boundary
-			if (ny >= 0 && ny < len && nx >= 0 && nx < len && !b[ny][nx] && !visited[ny][nx]) {
-				visited[ny][nx] = true;;
+			// Valid boundary && !visited[ny][nx]
+			if (ny >= 0 && ny < len && nx >= 0 && nx < len && b[ny][nx] != 1) {
 				int c = (ny != car.ly && nx != car.lx) ? 600 : 100;
-				s.push({ny, nx, car.cy, car.cx, car.cost + c});
+				if (car.cost + c <= b[ny][nx]) {
+					s.push({ny, nx, car.cy, car.cx, car.cost + c});
+					b[ny][nx] = car.cost + c;
+				}
 			}
 		}
+		// Test print code
+//		cout << "cy: " << car.cy << " cx: " << car.cx << '\n';
+//		for (int i = 0; i < b.size(); ++i) {
+//			for (int j = 0; j < b.size(); ++j) {
+//				if (b[i][j] == INF) printf("%5c ", '-');
+//				else if (b[i][j] == 1) printf("%5c ", 'X');
+//				else printf("%5d ", b[i][j]);
+//			} cout << '\n';
+//		}
 	}
+
 	return ret;
 }
 
@@ -123,6 +132,8 @@ int solution(vector<vector<int>> board) {
     int answer = 0;
 
 	b = vector<vector<int>> (board);
+	for (auto& row: b) for (auto& e: row) if (!e) e = INF; 
+
 	len = b.size();
 	for (auto& row: visited) for (auto& e: row) e = false;
 	for (auto& row: cost) for (auto& e: row) e = INF;
@@ -136,6 +147,7 @@ int solution(vector<vector<int>> board) {
 }
 
 int main() {
+	vector<int> answers;
 	vector<vector<int>> board1 = {
 		{0,0,0},
 		{0,0,0},
@@ -172,11 +184,15 @@ int main() {
 		{1, 0, 0, 0, 1},
 		{0, 1, 1, 0, 0},
 	};
-	cout << solution(board1) << '\n';
-	cout << solution(board2) << '\n';
-	cout << solution(board3) << '\n';
-	cout << solution(board4) << '\n';
-	cout << solution(board5) << '\n';
+
+	answers.push_back(solution(board1));
+	answers.push_back(solution(board2));
+	answers.push_back(solution(board3));
+	answers.push_back(solution(board4));
+	answers.push_back(solution(board5));
+
+	for (auto& e: answers) cout << e << '\n';
+
 	return 0;
 }
 
