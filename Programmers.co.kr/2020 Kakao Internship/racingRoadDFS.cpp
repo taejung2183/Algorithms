@@ -11,8 +11,12 @@ const int INF = 2100000000;
 vector<vector<int>> b;
 int len;
 bool visited[25][25];
-const int dy[4] = {1,-1,0,0};
-const int dx[4] = {0,0,1,-1};
+// Only works with this sequence
+const int dy[4] = {0,1,0,-1};
+const int dx[4] = {1,0,-1,0};
+// This doesn't work...(or any other sequence as well)
+// const int dy[4] = {1,0,-1,0};
+// const int dx[4] = {0,1,0,-1};
 
 struct Car {
 	int cy, cx, ly, lx, cost;
@@ -38,9 +42,10 @@ int dfsStack() {
 			int ny = car.cy + dy[i];
 			int nx = car.cx + dx[i];
 
-			// Valid boundary && !visited[ny][nx]
+			// (ny, nx) is available
 			if (ny >= 0 && ny < len && nx >= 0 && nx < len && b[ny][nx] != 1) {
 				int c = (ny != car.ly && nx != car.lx) ? 600 : 100;
+				// Update only when it's cheaper
 				if (car.cost + c <= b[ny][nx]) {
 					s.push({ny, nx, car.cy, car.cx, car.cost + c});
 					b[ny][nx] = car.cost + c;
@@ -109,10 +114,10 @@ int dfsRecursion(int cy, int cx, int ly, int lx, int cost) {
 int cost[25][25];
 void dp(int cy, int cx, int ly, int lx, int sum) {
 	// Prune if the current sum is worse(bigger) than the one in memory
-	if (sum > cost[cy][cx]) return;
+	if (sum > b[cy][cx]) return;
 			
 	// Memorize current answer
-	cost[cy][cx] = sum;
+	b[cy][cx] = sum;
 
 	// Arrived
 	if (cy == len - 1 && cx == len - 1) return;
@@ -121,7 +126,7 @@ void dp(int cy, int cx, int ly, int lx, int sum) {
 		int ny = cy + dy[i];
 		int nx = cx + dx[i];
 
-		if (ny >= 0 && ny < len && nx >= 0 && nx < len && !b[ny][nx]) {
+		if (ny >= 0 && ny < len && nx >= 0 && nx < len && b[ny][nx] != 1) {
 			int val = (ny != ly && nx != lx) ? 600 : 100;
 			dp(ny, nx, cy, cx, sum + val);
 		}
@@ -131,17 +136,14 @@ void dp(int cy, int cx, int ly, int lx, int sum) {
 int solution(vector<vector<int>> board) {
     int answer = 0;
 
-	b = vector<vector<int>> (board);
+	b = vector<vector<int>> (board); len = b.size();
 	for (auto& row: b) for (auto& e: row) if (!e) e = INF; 
-
-	len = b.size();
 	for (auto& row: visited) for (auto& e: row) e = false;
-	for (auto& row: cost) for (auto& e: row) e = INF;
 
 //	answer = dfsRecursion(0, 0, 0, 0, 0);
-//	dp(0,0,0,0,0);
-//	answer = cost[len - 1][len - 1];
-	answer = dfsStack();
+//	answer = dfsStack();
+	dp(0,0,0,0,0);
+	answer = b[len - 1][len - 1];
 	
     return answer;
 }
