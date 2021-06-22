@@ -10,7 +10,7 @@ bool cmp(string a, string b) {
 	string s1 = "", s2 = ""; 
 	for (auto rit = a.rbegin(); *rit != ' '; ++rit) s1.insert(0, 1, *rit);
 	for (auto rit = b.rbegin(); *rit != ' '; ++rit) s2.insert(0, 1, *rit);
-	return stoi(s1) > stoi(s2);
+	return stoi(s1) < stoi(s2);
 }
 
 vector<string> split(string str, char delimeter) {
@@ -33,42 +33,46 @@ vector<int> solution(vector<string> info, vector<string> query) {
 		q = query[i];
 
 		// Extract score from current query
+		score.clear();
 		for (auto rit = q.rbegin(); *rit != ' '; ++rit) score.insert(0, 1, *rit);
-		cout << "here\n";
+
 		// Binary search to find candidates with the score over the query's score
 		int mid, lo = 0, hi = info.size() - 1;
 		string tmpInfo, tmpScore;
 		while (lo < hi) {
-			// Get the info at the middle 
-			mid = (lo + hi) / 2;
+			// Get one info at the middle 
+			mid = (lo + hi) >> 1;
 			tmpInfo = info[mid];
 
-			// Exract score 
+			// Extract score 
+			tmpScore.clear();
 			for (auto rit = tmpInfo.rbegin(); *rit != ' '; ++rit) tmpScore.insert(0, 1, *rit);
 
 			if (stoi(tmpScore) < stoi(score)) lo = mid + 1;
 			else hi = mid;
 		}
-		cout << mid - 1 << '\n';
 
-		// Search from mid - 1
 		vector<string> infoV, queryV;
-		for (int j = mid - 1; j < info.size(); ++j) {
+		queryV = split(q, ' ');
+		// Erase "and"
+		queryV.erase(queryV.begin() + 1);
+		queryV.erase(queryV.begin() + 2);
+		queryV.erase(queryV.begin() + 3);
+
+		// Search starts from info[hi]
+		int cnt = 0;
+		for (int j = hi; j < info.size(); ++j) {
 			infoStr = info[j];
-			
 			infoV = split(infoStr, ' ');
-			queryV = split(q, ' ');
-			// Erase "and"
-			queryV.erase(queryV.begin() + 1);
-			queryV.erase(queryV.begin() + 3);
-			queryV.erase(queryV.begin() + 5);
-			queryV.erase(queryV.begin() + 7);
 
-			for (auto& e: infoV) cout << e << " "; cout << '\n';
-			for (auto& e: queryV) cout << e << " "; cout << '\n';
+			// Compare infoV and queryV
+			bool same = true;
+			for (int k = 0; k < 4; ++k) 
+				if (infoV[k][0] != queryV[k][0] && queryV[k] != "-") same = false; 
+			if (same) ++cnt;
 		}
+		answer.push_back(cnt);
 	}
-
     return answer;
 }
 
