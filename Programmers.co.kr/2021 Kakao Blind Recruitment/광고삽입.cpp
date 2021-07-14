@@ -5,22 +5,16 @@
 
 using namespace std;
 
+// Convert HH:MM:SS format to seconds
 int toSecond(const string& time) {
-	int ret = 0;
-	// 01:20:15
-	istringstream ss(time);
-	string timeStr;
-
-	while (getline(ss, timeStr, ':')) {
-		cout << timeStr << '\n';
-	}
-
-	return ret;
+	int h = stoi(time.substr(0,2));
+	int m = stoi(time.substr(3,2));
+	int s = stoi(time.substr(6,2));
+	return h * 3600 + m * 60 + s;
 }
 
 string solution(string play_time, string adv_time, vector<string> logs) {
     string answer = "";
-	toSecond(play_time);
     return answer;
 }
 
