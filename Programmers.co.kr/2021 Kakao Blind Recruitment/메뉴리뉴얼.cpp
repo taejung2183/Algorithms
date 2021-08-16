@@ -10,8 +10,14 @@ using namespace std;
 vector<string> combs;
 void comb(const string& s, int n, string& picked) {
 	// s must be sorted string 
-	if (!n) combs.push_back(picked);
 
+	// Base case
+	if (n == 0) {
+		combs.push_back(picked);
+		return;
+	}
+
+	// Force the sequence in sorted order
 	int smallest = picked.empty() ? 0 : (find(s.begin(), s.end(), picked.back()) - s.begin()) + 1;
 
 	for (int i = smallest; i < s.size(); ++i) {
@@ -26,7 +32,6 @@ bool cmp(pair<string, int>& i, pair<string, int>& j) { return (i.second > j.seco
 
 vector<string> solution(vector<string> orders, vector<int> course) {
     vector<string> answer;
-	vector<pair<string, int>> v;
 	map<string, int> m;
 	string s;
 
@@ -38,16 +43,15 @@ vector<string> solution(vector<string> orders, vector<int> course) {
 			combs.clear();
 			comb(orders[i], e, s);
 			for (auto& e: combs) ++m[e];
-			v = vector<pair<string, int>>(m.begin(), m.end());
-			sort(v.begin(), v.end(), cmp);
 		}
-		// Save the most popular combinations of orders
-		auto it = v.begin(); int maxVal = (*it).second;
-		while (it != v.end() && (*it).second > 1 && (*it).second == maxVal) {
-			answer.push_back((*it).first);
-			++it;
-		}
-		v.clear();
+
+		// Find the maximum value greater than 1
+		int maxVal = 0;
+		for (auto& e: m) if (e.second > 1) maxVal = max(maxVal, e.second);
+
+		// All the elements that have maxVal are the answer
+		for (auto& e: m) if (e.second == maxVal) answer.push_back(e.first);
+
 		m.clear();
 	}
 
