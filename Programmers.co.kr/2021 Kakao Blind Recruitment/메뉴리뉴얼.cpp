@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 
 using namespace std;
@@ -27,12 +27,9 @@ void comb(const string& s, int n, string& picked) {
 	}
 }
 
-// Decreasing order
-bool cmp(pair<string, int>& i, pair<string, int>& j) { return (i.second > j.second); }
-
 vector<string> solution(vector<string> orders, vector<int> course) {
     vector<string> answer;
-	map<string, int> m;
+	unordered_map<string, int> m;
 	string s;
 
 	// Sort orders to guarantee the sequence of the combinations is always in dictionary order
@@ -45,9 +42,12 @@ vector<string> solution(vector<string> orders, vector<int> course) {
 			for (auto& e: combs) ++m[e];
 		}
 
-		// Find the maximum value greater than 1
+		// Find the maximum value
 		int maxVal = 0;
-		for (auto& e: m) if (e.second > 1) maxVal = max(maxVal, e.second);
+		for (auto& e: m) maxVal = max(maxVal, e.second);
+
+		// Menu should be ordered more than twice
+		if (maxVal < 2) continue;
 
 		// All the elements that have maxVal are the answer
 		for (auto& e: m) if (e.second == maxVal) answer.push_back(e.first);
