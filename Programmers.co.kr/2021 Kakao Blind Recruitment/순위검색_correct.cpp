@@ -7,20 +7,20 @@
 
 using namespace std;
 unordered_map<string, vector<int>> groups;
-j
-//for (int i = 0; i < 16; ++i) {
-//	insert(key, i, point);
-//}
-//void insert(string* key, int mask, int point) {
-//    string s = "";
-//    for (int i = 0; i < 4; i++) {
-//        s += (mask & (1 << i)) ? "-" : key[i];
-//        map[s].push_back(point);
-//    }
-//}
+
+void makeGroup2(const string spec[], int score) {
+	for (int i = 0; i < 16; ++i) {
+		string str = "";
+
+		// Substitude j-th string to '-' 
+		for (int j = 0; j < 4; ++j) 
+			str += (i & (1 << j)) ? "-" : spec[j];
+		groups[str].push_back(score);
+	}
+}
 
 // Make 16 possible candidates with '-'
-void makeGroup(string* spec, int score) {
+void makeGroup(const string spec[], int score) {
 	string specAndBar[4][2] = { 
 		{spec[0], "-"},
 		{spec[1], "-"},
@@ -46,12 +46,13 @@ void makeGroup(string* spec, int score) {
 
 vector<int> solution(vector<string> info, vector<string> query) {
     vector<int> answer;
-	string str[4]; int score;
+	string str[4]; 
+	int score;
     
     for (int i = 0; i < info.size(); ++i) {
         istringstream ss(info[i]);
 		ss >> str[0] >> str[1] >> str[2] >> str[3] >> score;
-		makeGroup(str, score);
+		makeGroup2(str, score);
 	}
 	// Sort each score vector for binary search
 	for (auto& e: groups) sort(e.second.begin(), e.second.end());
@@ -70,7 +71,7 @@ vector<int> solution(vector<string> info, vector<string> query) {
 		// After I move the sorting outside of the iteration so that I can sort the original vector from the map,
 		// I got passed the efficiency test.
 		
-		// Calcualte how many candidates with the score over "score variable"
+		// Calcualte how many candidates with the score over "score" variable
 		auto lowerBound = lower_bound(queried.begin(), queried.end(), score);
 		answer.push_back(queried.size() - (lowerBound - queried.begin()));
 	}
@@ -100,4 +101,4 @@ int main() {
 	return 0;
 }
 
-// g++ -std=c++11 -Wall 순위검색2.cpp
+// g++ -std=c++11 -Wall 순위검색_correct.cpp
