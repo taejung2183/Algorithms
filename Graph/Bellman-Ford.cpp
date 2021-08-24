@@ -7,32 +7,33 @@ const int INF = 2100000000;
 //   Bellman-Ford algorithm works for all kinds of graphs.
 //   Bellman-Ford algorithm finds shortest paths from a starting
 //   node to all nodes of the graph, if there's no negative cycle.
+//	 (Bellman-Ford algorithm works for negative weighted graph 
+//	 without negative cycle.)
 //
 //   Unlike Dijkstra's algorithm,
 //   You can detect if the graph has negative cycle, (which 
 //   means there's no shortest path because through the negative 
-//   cycle, you can shorten the path infinitely.) by repeat
+//   cycle, you can shorten the path infinitely.) by repeating
 //   the iteration once more after N-1 iteration. If the result
 //   shortened, there's negative cyclce.
    
 vector<int> BellmanFord(int n, int s, vector<vector<int>>& edges) {
-	vector<int> dist(n + 1, 0);
-	for (int i = 1; i <= n; ++i) dist[i] = INF;
+	// n + 1 to match the index
+	vector<int> dist(n + 1, INF);
 	dist[s] = 0;
 
 	// Find the shortest paths to each vertex
-	vector<int> v;
 	for (int i = 0; i < n - 1; ++i) {
 		for (auto& e: edges) {
-			v = e;
-			int a = v[0], b = v[1], w = v[2];
-			dist[b] = min(dist[b], dist[a] + w);
+			vector<int> v = e;
+			int s = v[0], d = v[1], w = v[2];
+			dist[d] = min(dist[d], dist[s] + w);
 		}
 	}
 
 	// Check if there's a negative cycle
 	for (auto& e: edges) {
-		v = e;
+		vector<int> v = e;
 		int a = v[0], b = v[1], w = v[2];
 		if (dist[a] + w < dist[b]) {
 			cout << "Negative cycle detected" << '\n'; 
@@ -46,6 +47,7 @@ vector<int> BellmanFord(int n, int s, vector<vector<int>>& edges) {
 int main() {
 	int n = 5; // Number of vertices
 	int s = 1; // Start edge
+
 	// Weights of edges
 	vector<vector<int>> edges = {
 		{2,5,2}, 
