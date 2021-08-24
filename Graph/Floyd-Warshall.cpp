@@ -1,61 +1,59 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-const int INF = 987654321;
-/*
-input:
-1 2 5
-1 4 9
-1 5 1
-2 3 2
-3 4 7
-4 5 2
--1 -1 -1
-   */
-vector<vector<int>> FloydWarshall(int n, vector<vector<int>>& adj) {
-	vector<int> row(n + 1, 0);
-	vector<vector<int>> dist(n + 1, row);
+const int INF = 0x3f3f3f3f;
+
+vector<vector<int>> FloydWarshall(const vector<vector<int>>& adj) {
+	int n = adj.size();
+	vector<vector<int>> dist(n, vector<int>(n, 0));
 
 	// Initialize dist with adj
-	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= n; ++j) {
+	for (int i = 1; i < n; ++i) {
+		for (int j = 1; j < n; ++j) {
 			if (i == j) dist[i][j] = 0;
 			else if(adj[i][j]) dist[i][j] = adj[i][j];
 			else dist[i][j] = INF;
 		}
 	}
 
-	for (int k = 1; k <= n; ++k) {
-		for (int i = 1; i <= n; ++i) {
-			for (int j = 1; j <= n; ++j) {
+	for (int k = 1; k < n; ++k) {
+		for (int i = 1; i < n; ++i) {
+			for (int j = 1; j < n; ++j) {
 				dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
-//				cout << "k: " << k << " i:" << i << " j:" << j << '\n';
-//				for (auto& r: dist) {
-//					for (auto& e: r) cout << e << " ";
-//					cout << '\n';
-//				}
 			}
 		}
 	}
+
 	return dist;
 }
 
 int main() {
-	int n; cin >> n;
-	vector<int> row(n + 1, 0);
-	vector<vector<int>> adj(n + 1, row);
+	int n = 5; // # of vertices
+	int edges[][3] = {
+		{1, 2, 2},
+		{2, 3, 6},
+		{3, 2, 7},
+		{4, 3, 1},
+		{4, 5, 3},
+		{5, 1, 1},
+		{5, 2, 4},
+	}
+	vector<vector<int>> adj(n + 1, vector<int>(n + 1, 0));
 
-	// Initialize adj vector
-	while (true) {
-		int a, b, w; cin >> a >> b >> w;
-		if (a == -1) break;
-		adj[a][b] = adj[b][a] = w;
+	// Initialize adjacency matrix
+	for (const auto& e: edges) {
+		int s = e[0], d = e[1], w = e[2];
+		adj[s][d] = w;
 	}
 
-	vector<vector<int>> dist = FloydWarshall(n, adj);
+	vector<vector<int>> dist = FloydWarshall(adj);
+
+	// Print answer
 	for (auto& r: dist) {
-		for (auto& e: r) cout << e << " ";
-		cout << '\n';
+		for (auto& e: r) {
+			if (e == INF) printf("  %2s", "∞");
+			else printf(" %2d", e);
+		} cout << '\n';
 	}
 
 	return 0;
